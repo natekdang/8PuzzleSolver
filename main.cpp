@@ -20,6 +20,7 @@ class State
             this->parent = parent;
         }
         
+        
         void displayPuzzle()
         {
             cout << "g(n) = " << gn << " " << "h(n) = " << fn << endl;
@@ -28,24 +29,96 @@ class State
             cout << puzzle[6] << "  " << puzzle[7] << "  " << puzzle[8] << endl;
         }
         
-        State* moveUp()
+        State* moveUp(int heuristic) //return new state to add to queue
         {
-            return 0; //fixme
+            State* statetoAdd; 
+            
+            int x = blank_index % 3;
+            int y = blank_index / 3;
+            int new_y = y - 1;
+            int new_puzzle [9];
+            
+            for (int i = 0; i < 9; i++) //copy over puzzle
+            {
+                new_puzzle[i] = this->puzzle[i];
+            }
+            
+            int new_blank = x + (new_y * 3);
+            int temp = new_puzzle[this->blank_index];
+            new_puzzle[this->blank_index] = new_puzzle[new_blank];
+            new_puzzle[new_blank] = temp;
+            
+            int new_hn = 0; 
+            if (heuristic == 1)
+            {
+                new_hn = 0;
+            }
+            if (heuristic == 2)
+            {
+                new_hn = 1; //FIX ME Misplaced_h(new_puzz);
+            }
+            if (heuristic == 3)
+            {
+                new_hn = 2; //FIX ME Manhattan_h(new_puzz);
+            }
+            
+            int new_gn = this->gn + 1;
+            int new_fn = new_gn + new_hn;
+            
+            statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            return statetoAdd;
         }
         
-        State* moveDown()
+        State* moveDown(int heuristic)
         {
-            return 0; //fixme
+            State* statetoAdd; 
+            
+            int x = blank_index % 3;
+            int y = blank_index / 3;
+            int new_y = y + 1;
+            int new_puzzle [9];
+            
+            for (int i = 0; i < 9; i++) //copy over puzzle
+            {
+                new_puzzle[i] = this->puzzle[i];
+            }
+            
+            int new_blank = x + (new_y * 3);
+            int temp = new_puzzle[this->blank_index];
+            new_puzzle[this->blank_index] = new_puzzle[new_blank];
+            new_puzzle[new_blank] = temp;
+            
+            int new_hn = 0;
+            if (heuristic == 1)
+            {
+                new_hn = 0;
+            }
+            if(heuristic == 2)
+            {
+                new_hn = 1; //FIX ME Misplaced_h(new_puzz);
+            }
+            if(heuristic == 3)
+            {
+                new_hn = 2; //FIX ME Manhattan_h(new_puzz);
+            }
+            
+            int new_gn = this->gn + 1;
+            int new_fn = new_gn + new_hn;
+            
+            statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            return statetoAdd;
         }
         
         State* moveLeft()
         {
-            return 0; //fixme  
+            return this; //fixme  
         }
         
         State* moveRight()
         {
-            return 0; //fixme
+            return this; //fixme
         }
         
         //variables
@@ -68,10 +141,10 @@ class compareState //compare function for priority queue
 
 void general_search(State* problem, int algChoice)
 {
-    int heuristic = algChoice;
     int goal_state[9] = {1,2,3,4,5,6,8,7,0};
     int states_expanded = 0;
     int max_queue_size = 0;
+    int heuristic = algChoice; 
     
     priority_queue <State*, vector<State*>, compareState > pq; 
     
@@ -104,19 +177,10 @@ void general_search(State* problem, int algChoice)
             }
         }
         
+        // check where blank is and determine what operators are possible
+        // add those states to priority queue
         
-        if (algChoice == 1) //uniform cost
-        {
-            cout << "FIXME" << endl;
-        }
-        else if (algChoice == 2) //misplaced tile
-        {
-            cout << "FIXME" << endl;
-        }
-        else if (algChoice == 3) //manhattan
-        {
-            cout << "FIXME" << endl; 
-        }
+        
     }
     
     cout << "No solution found!" << endl;
