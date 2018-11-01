@@ -31,13 +31,13 @@ class State
         
         //variables
         State* parent; 
-        int puzzle [9];
+        int puzzle[9];
         int hn;
         int gn;
         int fn;
 };
 
-class compareState
+class compareState //compare function for priority queue
 {
     public: 
         int operator() (State* state1, State* state2)
@@ -46,11 +46,24 @@ class compareState
         }
 };
 
+void general_search(State* initialState, int algChoice)
+{
+    int heuristic = algChoice;
+    int goal_state[9] = {1,2,3,4,5,6,7,8,0};
+    
+    priority_queue <State*, vector<State*>, compareState> pq; 
+    
+    pq.push(initialState);
+    pq.top()->displayPuzzle();
+}
+
 //void general
 
 int main()
 {
     int userPuzzle[9];
+    int algChoice; 
+    
     cout << "Enter 3 tiles in first row following each tile with a return: ";
     cin >> userPuzzle[0];
     cin >> userPuzzle[1];
@@ -64,13 +77,17 @@ int main()
     cin >> userPuzzle[7];
     cin >> userPuzzle[8];
     
+    cout << "Enter algorithm choice: " << endl;
+    cout << "   Enter \"1\" for Uniform Cost Search" << endl;
+    cout << "   Enter \"2\" for A* w/ Misplaced Tile Heuristic" << endl;
+    cout << "   Enter \"3\" for A* w/ Manhattan Distance Heuristic" << endl;
+    
+    cin >> algChoice;
+    
     State* initState = new State(userPuzzle, 0, 0, 0, 0);
     
+    general_search(initState, algChoice);
     
-    priority_queue <State*, vector<State*>, compareState> pq; 
-    pq.push(initState);
-    
-    pq.top()->displayPuzzle();
     
     return 0; 
 } 
