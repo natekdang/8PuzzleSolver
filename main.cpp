@@ -57,7 +57,7 @@ class State
             }
             if (heuristic == 2)
             {
-                new_hn = 1; //FIX ME Misplaced_h(new_puzz);
+                new_hn = misplacedTile(new_puzzle); 
             }
             if (heuristic == 3)
             {
@@ -68,6 +68,9 @@ class State
             int new_fn = new_gn + new_hn;
             
             statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            cout << "New state: " << endl; 
+            statetoAdd->displayPuzzle();
             
             return statetoAdd;
         }
@@ -98,7 +101,7 @@ class State
             }
             if(heuristic == 2)
             {
-                new_hn = 1; //FIX ME Misplaced_h(new_puzz);
+                new_hn = misplacedTile(new_puzzle); 
             }
             if(heuristic == 3)
             {
@@ -109,6 +112,9 @@ class State
             int new_fn = new_gn + new_hn;
             
             statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            cout << "New state: " << endl; 
+            statetoAdd->displayPuzzle();
             
             return statetoAdd;
         }
@@ -140,7 +146,7 @@ class State
             }
             if(heuristic == 2)
             {
-                new_hn = misplacedTile(new_puzzle); //FIX ME Misplaced_h(new_puzz);
+                new_hn = misplacedTile(new_puzzle); 
             }
             if(heuristic == 3)
             {
@@ -151,6 +157,9 @@ class State
             int new_fn = new_gn + new_hn;
             
             statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            cout << "New state: " << endl; 
+            statetoAdd->displayPuzzle();
             
             return statetoAdd;  
         }
@@ -179,9 +188,9 @@ class State
             {
                 new_hn = 0;
             }
-            if(heuristic == 2)
+            if (heuristic == 2)
             {
-                new_hn = 1; //FIX ME Misplaced_h(new_puzz);
+                new_hn = misplacedTile(new_puzzle); 
             }
             if(heuristic == 3)
             {
@@ -192,6 +201,9 @@ class State
             int new_fn = new_gn + new_hn;
             
             statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            cout << "New state: " << endl; 
+            statetoAdd->displayPuzzle();
             
             return statetoAdd;
         }
@@ -219,13 +231,13 @@ int misplacedTile(int puzzle[9])
     int hn = 0; 
     for (int i = 0; i < 9; i++)
     {
-        if (puzzle[i] != i)
+        if (puzzle[i] != (i + 1) % 9)
         {
             ++hn;
         }
         
     }
-    cout << "num misplaced tile test" << hn << endl;
+    cout << "num misplaced tile test " << hn << endl;
     return hn; 
 }
 
@@ -258,7 +270,7 @@ void general_search(State* problem, int algChoice)
         {
             if (currNode->puzzle[i] != goal_state[i])
             {
-                cout << "TESTING: " << currNode->puzzle[i] << " does not match " << goal_state[i];
+                cout << "TESTING: " << currNode->puzzle[i] << " does not match " << goal_state[i] << endl;
                 cin >> max_queue_size; //testing
                 break;
             }
