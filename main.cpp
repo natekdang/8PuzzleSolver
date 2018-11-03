@@ -4,6 +4,8 @@
 
 using namespace std; 
 
+int misplacedTile(int puzzle[9]);
+
 class State
 {
     public:   //for sake of project keep public
@@ -49,7 +51,7 @@ class State
             new_puzzle[new_blank] = temp;
             
             int new_hn = 0; 
-            if (heuristic == 1)
+            if (heuristic == 1) //uniform cost is A* with h(n) harcoded to 0
             {
                 new_hn = 0;
             }
@@ -111,17 +113,90 @@ class State
             return statetoAdd;
         }
         
-        State* moveLeft()
+        State* moveLeft(int heuristic)
         {
-            return this; //fixme  
+            
+            State* statetoAdd; 
+            
+            int x = blank_index % 3;
+            int y = blank_index / 3;
+            int new_x = x - 1;
+            int new_puzzle [9];
+            
+            for (int i = 0; i < 9; i++) //copy over puzzle
+            {
+                new_puzzle[i] = this->puzzle[i];
+            }
+            
+            int new_blank = new_x + (y * 3);
+            int temp = new_puzzle[this->blank_index];
+            new_puzzle[this->blank_index] = new_puzzle[new_blank];
+            new_puzzle[new_blank] = temp;
+            
+            int new_hn = 0;
+            if (heuristic == 1)
+            {
+                new_hn = 0;
+            }
+            if(heuristic == 2)
+            {
+                new_hn = misplacedTile(new_puzzle); //FIX ME Misplaced_h(new_puzz);
+            }
+            if(heuristic == 3)
+            {
+                new_hn = 2; //FIX ME Manhattan_h(new_puzz);
+            }
+            
+            int new_gn = this->gn + 1;
+            int new_fn = new_gn + new_hn;
+            
+            statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            return statetoAdd;  
         }
         
-        State* moveRight()
+        State* moveRight(int heuristic)
         {
-            return this; //fixme
+            State* statetoAdd; 
+            
+            int x = blank_index % 3;
+            int y = blank_index / 3;
+            int new_x = x + 1;
+            int new_puzzle [9];
+            
+            for (int i = 0; i < 9; i++) //copy over puzzle
+            {
+                new_puzzle[i] = this->puzzle[i];
+            }
+            
+            int new_blank = new_x + (y * 3);
+            int temp = new_puzzle[this->blank_index];
+            new_puzzle[this->blank_index] = new_puzzle[new_blank];
+            new_puzzle[new_blank] = temp;
+            
+            int new_hn = 0;
+            if (heuristic == 1) 
+            {
+                new_hn = 0;
+            }
+            if(heuristic == 2)
+            {
+                new_hn = 1; //FIX ME Misplaced_h(new_puzz);
+            }
+            if(heuristic == 3)
+            {
+                new_hn = 2; //FIX ME Manhattan_h(new_puzz);
+            }
+            
+            int new_gn = this->gn + 1;
+            int new_fn = new_gn + new_hn;
+            
+            statetoAdd = new State(new_puzzle, new_blank, new_hn, new_gn, new_fn, this);
+            
+            return statetoAdd;
         }
         
-        //variables
+        //State variables, make public for now so don't have to deal with get
         State* parent; 
         int puzzle[9];
         int blank_index;
@@ -139,9 +214,24 @@ class compareState //compare function for priority queue
         }
 };
 
+int misplacedTile(int puzzle[9])
+{
+    int hn = 0; 
+    for (int i = 0; i < 9; i++)
+    {
+        if (puzzle[i] != i)
+        {
+            ++hn;
+        }
+        
+    }
+    cout << "num misplaced tile test" << hn << endl;
+    return hn; 
+}
+
 void general_search(State* problem, int algChoice)
 {
-    int goal_state[9] = {1,2,3,4,5,6,8,7,0};
+    int goal_state[9] = {1,2,3,4,5,6,7,8,0};
     int states_expanded = 0;
     int max_queue_size = 0;
     int heuristic = algChoice; 
@@ -159,24 +249,47 @@ void general_search(State* problem, int algChoice)
             max_queue_size = pq.size();
         }
         
-        cout << "checking state";
+        cout << "checking state ";
         currNode = pq.top();
         pq.pop();
+        currNode->displayPuzzle(); 
         
         for (int i = 0; i < 9; i++) //check for goal state
         {
             if (currNode->puzzle[i] != goal_state[i])
             {
+                cout << "TESTING: " << currNode->puzzle[i] << " does not match " << goal_state[i];
+                cin >> max_queue_size; //testing
                 break;
             }
             else if ((currNode->puzzle[i] == goal_state[i]) && (i == 8))
             {
                 currNode->displayPuzzle(); 
+                cout << "Max queue size: " << max_queue_size << endl;
+                cout << "States expanded: " << states_expanded << endl;
                 cout << "Puzzle Solved!" << endl;
                 return;
             }
         }
         
+        states_expanded += 1; //expanding state, update count
+        
+        if (currNode->blank_index != 0  && currNode->blank_index != 1 && currNode->blank_index != 2)
+        {
+            pq.push(currNode->moveUp(heuristic));
+        }
+        if (currNode->blank_index != 6  && currNode->blank_index != 7 && currNode->blank_index != 8)
+        {
+            pq.push(currNode->moveDown(heuristic));
+        }
+        if (currNode->blank_index != 0  && currNode->blank_index != 3 && currNode->blank_index != 6)
+        {
+            pq.push(currNode->moveLeft(heuristic));
+        }
+        if (currNode->blank_index != 2 && currNode->blank_index != 5 && currNode->blank_index != 8)
+        {
+            pq.push(currNode->moveRight(heuristic));
+        }
         // check where blank is and determine what operators are possible
         // add those states to priority queue
         
@@ -193,7 +306,7 @@ void general_search(State* problem, int algChoice)
 int main()
 {
     //int userPuzzle[9];
-    int userPuzzle[9] = {1,2,3,4,5,6,7,8,0}; //TESTING
+    int userPuzzle[9] = {0,1,3,4,2,5,7,8,6}; //TESTING
     int algChoice;
     int blank_index; 
     
@@ -227,7 +340,7 @@ int main()
     
     cin >> algChoice;
     
-    State* problem = new State(userPuzzle, 0, 0, 0, 0, 0);
+    State* problem = new State(userPuzzle, blank_index, 0, 0, 0, 0);
     
     general_search(problem, algChoice);
     
