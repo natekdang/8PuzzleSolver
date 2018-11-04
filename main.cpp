@@ -281,10 +281,9 @@ void general_search(State* problem, int algChoice)
             max_queue_size = pq.size();
         }
         
-        cout << "Expanding state ";
         currNode = pq.top();
         pq.pop();
-        currNode->displayPuzzle(); 
+        //currNode->displayPuzzle(); 
         
         for (int i = 0; i < 9; i++) //check for goal state
         {
@@ -296,14 +295,16 @@ void general_search(State* problem, int algChoice)
             }
             else if ((currNode->puzzle[i] == goal_state[i]) && (i == 8))
             {
-                currNode->displayPuzzle(); 
                 cout << "Max queue size: " << max_queue_size << endl;
                 cout << "States expanded: " << states_expanded << endl;
                 cout << "Puzzle Solved!" << endl;
+                currNode->displayPuzzle();
                 return;
             }
         }
         
+        cout << "Expanding state " << endl;
+        currNode->displayPuzzle();
         states_expanded += 1; //expanding state, update count
         
         // check where blank is and determine what operators are possible
@@ -368,6 +369,16 @@ int main()
     cin >> algChoice;
     
     State* problem = new State(userPuzzle, blank_index, 0, 0, 0, 0);
+    
+    if (algChoice == 2)
+    {
+        problem->hn = misplacedTile(problem->puzzle);
+    }
+    if (algChoice == 3)
+    {
+        problem->hn = manhattanDistance(problem->puzzle);
+    }
+    
     
     general_search(problem, algChoice);
     
